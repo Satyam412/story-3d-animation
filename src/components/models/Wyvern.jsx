@@ -12,6 +12,8 @@ export default function Wyvern(props) {
   const { actions } = useAnimations(animations, group)
   const { pointer } = useThree()
 
+  const headBone = React.useRef(null)
+
   useEffect(() => {
     const actionNames = Object.keys(actions)
     const idleAnim = actionNames.find(n => n.toLowerCase().includes('idle') || n.toLowerCase().includes('breath')) || actionNames[0]
@@ -19,25 +21,25 @@ export default function Wyvern(props) {
     if (actions[idleAnim]) {
       actions[idleAnim].reset().fadeIn(0.5).play()
     }
-  }, [actions])
+
+    // Find head bone once
+    clone.traverse((child) => {
+      if (child.isBone && child.name.toLowerCase().includes('head')) {
+        headBone.current = child
+      }
+    })
+  }, [actions, clone])
 
   useFrame(() => {
     if (!group.current) return;
     
-    let headBone = null
-    clone.traverse((child) => {
-      if (child.isBone && child.name.toLowerCase().includes('head')) {
-        headBone = child
-      }
-    })
-
-    if (headBone) {
+    if (headBone.current) {
       const target = new THREE.Vector3(pointer.x * 5, pointer.y * 5, 5)
-      if (!headBone.userData.originalRotation) headBone.userData.originalRotation = headBone.rotation.clone()
+      if (!headBone.current.userData.originalRotation) headBone.current.userData.originalRotation = headBone.current.rotation.clone()
       
-      headBone.lookAt(target)
-      headBone.rotation.x = THREE.MathUtils.lerp(headBone.userData.originalRotation.x, headBone.rotation.x, 0.2)
-      headBone.rotation.y = THREE.MathUtils.lerp(headBone.userData.originalRotation.y, headBone.rotation.y, 0.2)
+      headBone.current.lookAt(target)
+      headBone.current.rotation.x = THREE.MathUtils.lerp(headBone.current.userData.originalRotation.x, headBone.current.rotation.x, 0.2)
+      headBone.current.rotation.y = THREE.MathUtils.lerp(headBone.current.userData.originalRotation.y, headBone.current.rotation.y, 0.2)
     }
     
     // Add slow levitation

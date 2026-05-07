@@ -117,34 +117,43 @@ export default function Skull(props) {
   })), [])
 
   // ── Per-frame: lerp positions + update mesh opacity ──────────────────────────
+  const lastOffset = useRef(0)
+  
   useFrame(() => {
-    if (!scroll) return
+    if (!scroll || !group.current || !group.current.visible) return
     const offset = scroll.offset
+    
+    // Only update if offset has changed significantly or if we are in the active range
+    const isChanging = Math.abs(offset - lastOffset.current) > 0.0001
+    const inRange = offset > 0.6 // The range where the skull appears and dissolves
+    
+    if (isChanging && inRange) {
+      LAYERS.forEach(({ dissolve }, i) => {
+        const { pts, mat } = layerRefs[i]
+        if (!pts.current) return
 
-    LAYERS.forEach(({ dissolve }, i) => {
-      const { pts, mat } = layerRefs[i]
-      if (!pts.current) return
+        // conv: 0 = scattered, 1 = on skull surface
+        const conv = 1 - ss(offset, dissolve[0], dissolve[1])
+        const sc = 1 - conv
 
-      // conv: 0 = scattered, 1 = on skull surface
-      const conv = 1 - ss(offset, dissolve[0], dissolve[1])
-      const sc = 1 - conv
+        const arr    = pts.current.geometry.attributes.position.array
+        const { N, origins, scattered } = layerData[i]
 
-      const arr    = pts.current.geometry.attributes.position.array
-      const { N, origins, scattered } = layerData[i]
+        for (let j = 0; j < N; j++) {
+          arr[j*3]   = scattered[j*3]   * sc + origins[j*3]   * conv
+          arr[j*3+1] = scattered[j*3+1] * sc + origins[j*3+1] * conv
+          arr[j*3+2] = scattered[j*3+2] * sc + origins[j*3+2] * conv
+        }
+        pts.current.geometry.attributes.position.needsUpdate = true
 
-      for (let j = 0; j < N; j++) {
-        arr[j*3]   = scattered[j*3]   * sc + origins[j*3]   * conv
-        arr[j*3+1] = scattered[j*3+1] * sc + origins[j*3+1] * conv
-        arr[j*3+2] = scattered[j*3+2] * sc + origins[j*3+2] * conv
-      }
-      pts.current.geometry.attributes.position.needsUpdate = true
-
-      if (mat.current) {
-        // Large chunks are bright and punchy; fine dust is subtle
-        const base = 0.5 - i * 0.07           // 0.50 → 0.22
-        mat.current.opacity = base + conv * 0.45
-      }
-    })
+        if (mat.current) {
+          const base = 0.5 - i * 0.07
+          mat.current.opacity = base + conv * 0.45
+        }
+      })
+    }
+    
+    lastOffset.current = offset
 
     // Skull mesh: fade out as chunks fly
     const meshConv = 1 - ss(offset, 0.87, 0.91)

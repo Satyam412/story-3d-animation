@@ -91,6 +91,12 @@ export default function SceneElements() {
       }
       group4.current.position.x = 0
     }
+
+    // New Performance Optimization: Hide groups when they are far outside the viewport
+    if (group1.current) group1.current.visible = offset < 0.4
+    if (group2.current) group2.current.visible = offset > 0.2 && offset < 0.6
+    if (group3.current) group3.current.visible = offset > 0.4 && offset < 0.8
+    if (group4.current) group4.current.visible = offset > 0.6
   })
 
   return (
