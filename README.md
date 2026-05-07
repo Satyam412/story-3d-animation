@@ -1,16 +1,23 @@
-# React + Vite
+# Story 3D Animation
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A high-performance 3D storytelling experience built with React, Three.js, and GSAP.
 
-Currently, two official plugins are available:
+## Features
+- Smooth scroll-based 3D animations
+- High-quality GLTF models (Lotus, Pokeball, Wyvern, Skull)
+- Premium post-processing effects (Noise, Vignette, ToneMapping)
+- Optimized for Vercel deployment
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Getting Started
+1. Install dependencies: `npm install`
+2. Run development server: `npm run dev`
+3. Build for production: `npm run build`
 
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## Tech Stack
+- [Vite](https://vitejs.dev/)
+- [React](https://reactjs.org/)
+- [Three.js](https://threejs.org/)
+- [React Three Fiber](https://github.com/pmndrs/react-three-fiber)
+- [React Three Drei](https://github.com/pmndrs/drei)
+- [Postprocessing](https://github.com/pmndrs/postprocessing)
+- [GSAP](https://greensock.com/gsap/)
